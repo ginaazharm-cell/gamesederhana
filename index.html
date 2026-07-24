@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Tap Cepat</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+      box-sizing: border-box;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 28px;
+      text-align: center;
+    }
+
+    p {
+      text-align: center;
+      opacity: 0.9;
+    }
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .panel {
+      flex: 1;
+      background: #334155;
+      padding: 12px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #startBtn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #22c55e;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    #gameArea {
+      position: relative;
+      width: 100%;
+      height: 420px;
+      background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    #target {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      background: #f43f5e;
+      border-radius: 50%;
+      display: none;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+      touch-action: manipulation;
+    }
+
+    #message {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Game Tap Cepat</h1>
+    <p>Klik lingkaran merah sebanyak mungkin dalam 30 detik.</p>
+
+    <div class="info">
+      <div class="panel">Skor: <span id="score">0</span></div>
+      <div class="panel">Waktu: <span id="time">30</span>s</div>
+    </div>
+
+    <button id="startBtn">Mulai Game</button>
+
+    <div id="gameArea">
+      <div id="target"></div>
+    </div>
+
+    <div id="message">Tekan "Mulai Game" untuk bermain.</div>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById("startBtn");
+    const gameArea = document.getElementById("gameArea");
+    const target = document.getElementById("target");
+    const scoreEl = document.getElementById("score");
+    const timeEl = document.getElementById("time");
+    const messageEl = document.getElementById("message");
+
+    let score = 0;
+    let timeLeft = 30;
+    let timer = null;
+    let playing = false;
+
+    function moveTarget() {
+      const size = Math.floor(Math.random() * 35) + 55;
+      target.style.width = size + "px";
+      target.style.height = size + "px";
+
+      const maxX = gameArea.clientWidth - size;
+      const maxY = gameArea.clientHeight - size;
+
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+
+      target.style.left = x + "px";
+      target.style.top = y + "px";
+    }
+
+    function startGame() {
+      score = 0;
+      timeLeft = 30;
+      playing = true;
+
+      scoreEl.textContent = score;
+      timeEl.textContent = timeLeft;
+      messageEl.textContent = "Cepat! Tap lingkarannya.";
+      startBtn.textContent = "Main Lagi";
+
+      target.style.display = "block";
+      moveTarget();
+
+      clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft--;
+        timeEl.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function endGame() {
+      playing = false;
+      clearInterval(timer);
+      target.style.display = "none";
+      messageEl.textContent = "Waktu habis. Skor akhir kamu: " + score;
+    }
+
+    startBtn.addEventListener("click", startGame);
+
+    target.addEventListener("pointerdown", () => {
+      if (!playing) return;
+      score++;
+      scoreEl.textContent = score;
+      moveTarget();
+    });
+
+    window.addEventListener("resize", () => {
+      if (playing) moveTarget();
+    });
+  </script>
+</body>
+</html>
